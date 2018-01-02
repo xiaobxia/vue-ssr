@@ -9,18 +9,19 @@ const isDev = process.env.NODE_ENV !== 'production'
 // return a Promise that resolves to the app instance.
 export default context => {
   return new Promise((resolve, reject) => {
-    const s = isDev && Date.now()
-    const {app, router, store} = createApp()
+    // 时间戳
+    const s = isDev && Date.now();
+    const {app, router, store} = createApp();
 
-    const {url} = context
-    const {fullPath} = router.resolve(url).route
+    const {url} = context;
+    const {fullPath} = router.resolve(url).route;
 
     if (fullPath !== url) {
       return reject({url: fullPath})
     }
 
     // set router's location
-    router.push(url)
+    router.push(url);
 
     // wait until router has resolved possible async hooks
     router.onReady(() => {
@@ -40,7 +41,7 @@ export default context => {
         // 当我们将状态附加到上下文，
         // 并且 `template` 选项用于 renderer 时，
         // 状态将自动序列化为 `window.__INITIAL_STATE__`，并注入 HTML。
-        context.state = store.state
+        context.state = store.state;
         resolve(app)
       }).catch(reject)
     }, reject)

@@ -1,49 +1,20 @@
-import {
-  fetchUser,
-  fetchItems,
-  fetchIdsByType
-} from '../api'
+import axios from 'axios';
 
 export default {
-  // ensure data for rendering given list type
-  FETCH_LIST_DATA: ({ commit, dispatch, state }, { type }) => {
-    commit('SET_ACTIVE_TYPE', { type })
-    return fetchIdsByType(type)
-      .then(ids => commit('SET_LIST', { type, ids }))
-      .then(() => dispatch('ENSURE_ACTIVE_ITEMS'))
+  FETCH_USERS: ({commit, dispatch, state}) => {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        commit('SET_USERS', {users: [{name: '小a'}, {name: '小b'}]});
+        resolve([{name: '小a'}, {name: '小b'}]);
+      }, 100);
+    });
   },
-
-  // ensure all active items are fetched
-  ENSURE_ACTIVE_ITEMS: ({ dispatch, getters }) => {
-    return dispatch('FETCH_ITEMS', {
-      ids: getters.activeIds
-    })
-  },
-
-  FETCH_ITEMS: ({ commit, state }, { ids }) => {
-    // on the client, the store itself serves as a cache.
-    // only fetch items that we do not already have, or has expired (3 minutes)
-    const now = Date.now()
-    ids = ids.filter(id => {
-      const item = state.items[id]
-      if (!item) {
-        return true
-      }
-      if (now - item.__lastUpdated > 1000 * 60 * 3) {
-        return true
-      }
-      return false
-    })
-    if (ids.length) {
-      return fetchItems(ids).then(items => commit('SET_ITEMS', { items }))
-    } else {
-      return Promise.resolve()
-    }
-  },
-
-  FETCH_USER: ({ commit, state }, { id }) => {
-    return state.users[id]
-      ? Promise.resolve(state.users[id])
-      : fetchUser(id).then(user => commit('SET_USER', { id, user }))
+  FETCH_USER: ({commit, dispatch, state}, {type}) => {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        commit('SET_USER', {user: {name: '小a'}});
+        resolve({name: '小a'});
+      }, 100);
+    });
   }
 }
