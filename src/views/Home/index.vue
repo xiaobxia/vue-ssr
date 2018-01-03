@@ -6,10 +6,10 @@
 <script>
   import {mapActions, mapGetters} from 'vuex';
   export default{
+    title: '首页',
     data() {
       return {}
     },
-
     asyncData ({store}) {
       return store.dispatch('FETCH_USERS')
     },

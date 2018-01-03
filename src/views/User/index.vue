@@ -7,7 +7,9 @@
     data() {
       return {}
     },
-
+    title() {
+      return this.user.name;
+    },
     asyncData ({store, route: {params: {id}}}) {
       return store.dispatch('FETCH_USER', {id})
     },

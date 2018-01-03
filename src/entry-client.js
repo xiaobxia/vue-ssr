@@ -12,6 +12,7 @@ Vue.mixin({
   // 混合进的函数
   beforeRouteUpdate (to, from, next) {
     const {asyncData} = this.$options;
+    // 执行异步请求函数
     if (asyncData) {
       asyncData({
         store: this.$store,
@@ -25,7 +26,7 @@ Vue.mixin({
 
 const {app, router, store} = createApp();
 
-// 获取状态
+// 获取状态给vuex
 if (window.__INITIAL_STATE__) {
   store.replaceState(window.__INITIAL_STATE__)
 }
@@ -37,15 +38,15 @@ router.onReady(() => {
   // 以便我们不会二次预取(double-fetch)已有的数据。
   // 使用 `router.beforeResolve()`，以便确保所有异步组件都 resolve。
   router.beforeResolve((to, from, next) => {
-    const matched = router.getMatchedComponents(to)
-    const prevMatched = router.getMatchedComponents(from)
+    const matched = router.getMatchedComponents(to);
+    const prevMatched = router.getMatchedComponents(from);
     // 我们只关心之前没有渲染的组件
     // 所以我们对比它们，找出两个匹配列表的差异组件
     let diffed = false;
     const activated = matched.filter((c, i) => {
       return diffed || (diffed = (prevMatched[i] !== c))
     });
-    const asyncDataHooks = activated.map(c => c.asyncData).filter(_ => _)
+    const asyncDataHooks = activated.map(c => c.asyncData).filter(_ => _);
     if (!asyncDataHooks.length) {
       return next()
     }

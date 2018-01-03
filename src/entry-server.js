@@ -12,20 +12,24 @@ export default context => {
     // 时间戳
     const s = isDev && Date.now();
     const {app, router, store} = createApp();
-
+    // 请求的url
     const {url} = context;
+    // 和vue的router去匹配
     const {fullPath} = router.resolve(url).route;
-
+    // 如果没有匹配
     if (fullPath !== url) {
       return reject({url: fullPath})
     }
-
+    // 修改vue的router
     // set router's location
     router.push(url);
 
     // wait until router has resolved possible async hooks
     router.onReady(() => {
+      // 匹配的vm
       const matchedComponents = router.getMatchedComponents()
+
+      // console.log(matchedComponents)
       // 没有匹配路由
       if (!matchedComponents.length) {
         return reject({code: 404})

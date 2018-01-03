@@ -62,7 +62,7 @@ if (isProd) {
 // 静态文件缓存
 const serve = (path, cache) => express.static(resolve(path), {
   maxAge: cache && isProd ? 1000 * 60 * 60 * 24 * 30 : 0
-})
+});
 // 压缩
 app.use(compression({ threshold: 0 }))
 // 静态资源
@@ -78,7 +78,7 @@ app.use('/service-worker.js', serve('./dist/service-worker.js'))
 // headers.
 // 1-second microcache.
 // https://www.nginx.com/blog/benefits-of-microcaching-nginx/
-// 对页面进行缓存
+// 对页面进行缓存,一秒过期
 app.use(microcache.cacheSeconds(1, req => useMicroCache && req.originalUrl))
 
 function render (req, res) {
@@ -102,13 +102,14 @@ function render (req, res) {
 
   const context = {
     title: 'Vue HN 2.0', // default title
+    // 请求的url
     url: req.url
-  }
+  };
   renderer.renderToString(context, (err, html) => {
     if (err) {
       return handleError(err)
     }
-    res.send(html)
+    res.send(html);
     if (!isProd) {
       console.log(`whole request: ${Date.now() - s}ms`)
     }
@@ -117,9 +118,9 @@ function render (req, res) {
 
 app.get('*', isProd ? render : (req, res) => {
   readyPromise.then(() => render(req, res))
-})
+});
 
 const port = process.env.PORT || 4000
 app.listen(port, () => {
   console.log(`server started at localhost:${port}`)
-})
+});
