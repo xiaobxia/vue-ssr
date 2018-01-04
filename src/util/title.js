@@ -6,7 +6,7 @@ function getTitle(vm) {
       : title
   }
 }
-
+// 服务端得到title
 const serverTitleMixin = {
   created () {
     const title = getTitle(this)

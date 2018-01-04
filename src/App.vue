@@ -14,5 +14,12 @@
   </div>
 </template>
 
-<style>
+<style lang="scss">
+  @import "var";
+  /*更推荐在模板中写css*/
+  #app{
+    .header{
+      background-color: $red;
+    }
+  }
 </style>

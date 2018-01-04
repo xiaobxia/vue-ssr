@@ -5,9 +5,15 @@ const nodeExternals = require('webpack-node-externals')
 const VueSSRServerPlugin = require('vue-server-renderer/server-plugin')
 
 module.exports = merge(base, {
+  // 这允许 webpack 以 Node 适用方式(Node-appropriate fashion)处理动态导入(dynamic import)，
+  // 并且还会在编译 Vue 组件时，
+  // 告知 `vue-loader` 输送面向服务器代码(server-oriented code)。
   target: 'node',
+  // 对 bundle renderer 提供 source map 支持
   devtool: '#source-map',
+  // 将 entry 指向应用程序的 server entry 文件
   entry: './src/entry-server.js',
+  // 此处告知 server bundle 使用 Node 风格导出模块(Node-style exports)
   output: {
     filename: 'server-bundle.js',
     libraryTarget: 'commonjs2'
@@ -18,10 +24,30 @@ module.exports = merge(base, {
   },
   // https://webpack.js.org/configuration/externals/#externals
   // https://github.com/liady/webpack-node-externals
+  // 外置化应用程序依赖模块。可以使服务器构建速度更快，
+  // 并生成较小的 bundle 文件。
+  /**
+   * 请注意，在 externals 选项中，我们将 CSS 文件列入白名单。
+   * 这是因为从依赖模块导入的 CSS 还应该由 webpack 处理。
+   * 如果你导入依赖于 webpack 的任何其他类型的文件（例如 *.vue, *.sass），
+   * 那么你也应该将它们添加到白名单中。
+   *
+   * 如果你使用 runInNewContext: 'once' 或 runInNewContext: true，
+   * 那么你还应该将修改 global 的 polyfill 列入白名单，例如 babel-polyfill。
+   * 这是因为当使用新的上下文模式时，server bundle 中的代码具有自己的 global 对象。
+   * 由于在使用 Node 7.6+ 时，在服务器并不真正需要它，
+   * 所以实际上只需在客户端 entry 导入它。
+   */
   externals: nodeExternals({
     // do not externalize CSS files in case we need to import it from a dep
+    // 不要外置化 webpack 需要处理的依赖模块。
+    // 你可以在这里添加更多的文件类型。例如，未处理 *.vue 原始文件，
+    // 你还应该将修改 `global`（例如 polyfill）的依赖模块列入白名单
     whitelist: /\.css$/
   }),
+  // 这是将服务器的整个输出
+  // 构建为单个 JSON 文件的插件。
+  // 默认文件名为 `vue-ssr-server-bundle.json`
   plugins: [
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development'),

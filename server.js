@@ -80,6 +80,10 @@ app.use('/service-worker.js', serve('./dist/service-worker.js'))
 // https://www.nginx.com/blog/benefits-of-microcaching-nginx/
 // 对页面进行缓存,一秒过期
 app.use(microcache.cacheSeconds(1, req => useMicroCache && req.originalUrl))
+// app.use(microcache.cacheSeconds(5, (req,res) => {
+//   // 如果返回了false，那就是不试用缓存，可以通过originalUrl，判断哪些url不用缓存
+//   return useMicroCache && req.originalUrl;
+// }))
 
 function render (req, res) {
   const s = Date.now()
